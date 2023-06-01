@@ -1,0 +1,21 @@
+{
+  "name": "p4-vacation-photos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "css:build": "tailwindcss build -i ./wwwroot/css/site.css -o ./wwwroot/css/site.min.css --minify",
+    "css:watch": "tailwindcss -i ./wwwroot/css/site.css -o ./wwwroot/css/site.min.css --watch --minify",
+    "dotnet:watch": "dotnet watch run",
+    "dev": "npm-run-all --parallel css:watch dotnet:watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.23",
+    "tailwindcss": "^3.3.2"
+  }
+}
