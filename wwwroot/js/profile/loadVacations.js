@@ -1,9 +1,9 @@
-const vacationsElement = document
+const vacationsContainerElement = document
   .getElementById("vacations")
   .querySelector("div");
 
 let index = 0;
-vacationsElement.childNodes.forEach((element) => {
+vacationsContainerElement.childNodes.forEach((element) => {
   if ($(element).hasClass("ignore")) return;
   if (!$(element).is("div")) return;
   $.ajax({

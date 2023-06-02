@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using P4_Vacation_photos.Classes;
 using P4_Vacation_photos.Classes.api;
@@ -19,15 +20,17 @@ public class ProfileModel : PageModel
 
     public IActionResult OnGet()
     {
+        bool usesId = Int64.TryParse(Username, out long id);
         var user = this._DB._Provider.select("User",
         new string[] { "id", "username", "email", "description", "picture", "created_at" },
         new Models.DB.Primitives.Where[] {
-            new Models.DB.Primitives.Where("username", Models.DB.Primitives.Compare.Equal, Username)
+            usesId ?
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, Username)
+            : new Models.DB.Primitives.Where("username", Models.DB.Primitives.Compare.Equal, Username)
         });
-        if (user.Count() != 1)
-        {
-            return RedirectToPage("/Index");
-        }
+        if (usesId == false) return RedirectToPage("/profile/Profile", null, new { Username = user[0]._columns.Find(col => col._column == "id")._value });
+        if (user.Count() != 1) return RedirectToPage("/Index");
+
         DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(user[0]._columns.Find(col => col._column == "created_at")._value);
         this._User = new User(
             user[0]._columns.Find(col => col._column == "id")._value,
@@ -42,14 +45,33 @@ public class ProfileModel : PageModel
         });
         return Page();
     }
-
+    [HttpPost, IgnoreAntiforgeryToken(Order = 1001)]
+    public JsonResult OnPostEditProfile([FromForm] ProfilePostEditProfile data)
+    {
+        var response = new ApiResponse<bool>(false, "Nothing to change", false);
+        if (User.Identity.IsAuthenticated == false) return response.CreateJsonResult(false, "You are not allowed to do this", false);
+        var updatingData = new List<Models.DB.Primitives.Column>() { };
+        data.GetType().GetFields().ToList().ForEach(field =>
+        {
+            if (field.GetValue(data) != null || field.GetValue(data).ToString() != "")
+            {
+                updatingData.Add(new Models.DB.Primitives.Column(field.Name, field.GetValue(data).ToString()));
+            }
+        });
+        if (updatingData.Count() == 0) return response.CreateJsonResult(false, "Nothing to change", false);
+        this._DB._Provider.update("User", updatingData, new Models.DB.Primitives.Where[] {
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, User.Identity.Name)
+        });
+        return response.CreateJsonResult(true, "Profile updated", true);
+    }
+    [HttpGet]
     public JsonResult OnGetVacations([FromQuery] ProfileGetVacations data)
     {
         var response = new ApiResponse<Vacation?>(false, "Nothing found", null);
         var userFetch = this._DB._Provider.select("User",
         new string[] { "id" },
         new Models.DB.Primitives.Where[] {
-            new Models.DB.Primitives.Where("username", Models.DB.Primitives.Compare.Equal, Username)
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, Username)
         });
         if (userFetch.Count() != 1)
         {

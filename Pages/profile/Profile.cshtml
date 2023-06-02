@@ -2,23 +2,32 @@
 @model ProfileModel
 @{ ViewData["Title"] = "Profiel van " +
 Model._User.username; }
+
 <script src="~/js/profile/loadVacations.js" defer></script>
+@if (Model._User.id.ToString() == User.Identity.Name) {
+<script src="~/js/profile/editProfile.js" defer></script>
+}
 <section class="flex gap-2 w-full m-2">
-    <div class="">
+    <div>
         <img class="rounded-full object-cover w-32 h-32"
             src="https://www.howtogeek.com/wp-content/uploads/2021/07/Discord-Logo-Lede.png?height=200p&trim=2,2,2,2"
             alt="Profile image" />
     </div>
     <div class="relative flex-grow">
-        <h1 class="text-2xl font-bold">@Model._User.username</h1>
-        <p class="text-gray-500">
-            @Model._User.description - Joined on:
-            @Model._User.createdAt.ToLocalTime().ToString("MM/dd/yyyy")
+        <h1 class="text-2xl font-bold editable" data-column="username" data-element="input" data-type="text">
+            @Model._User.username</h1>
+        <p class="text-gray-500 flex">
+            <span class="editable" data-column="description"
+                data-element="textarea">@Model._User.description</span><span>&nbsp; -
+                Joined on:
+                @Model._User.createdAt.ToLocalTime().ToString("MM/dd/yyyy")</span>
         </p>
-        @if (Model._User.username == User.Identity.Name) {
-        <a href="/Profile/Edit"
-            class="absolute bottom-0 right-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit
-            profile</a>
+        @if (Model._User.id.ToString() == User.Identity.Name) {
+        <div id="editProfile" class="absolute gap-1 flex flex-row bottom-0 right-3">
+            <button class=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit
+                profile</button>
+        </div>
+
         }
     </div>
 </section>
@@ -49,7 +58,7 @@ Model._User.username; }
     </div>
     }
 
-    @if (Model._User.username == User.Identity.Name) {
+    @if (Model._User.id.ToString() == User.Identity.Name) {
     <div class="ignore w-96 max-w-[100vw] h-60 bg-gradient-to-tr from-green-400 to-blue-500">
         <div class="flex flex-col group hover:bg-slate-600/30 transition-all h-full w-full justify-center items-center">
             <span class="text-white text-6xl">+</span>

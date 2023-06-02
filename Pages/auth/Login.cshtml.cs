@@ -58,8 +58,8 @@ public class LoginModel : PageModel
         }
         // Create the claims
         List<Claim> claims = new List<Claim>();
-        claims.Add(new Claim(ClaimTypes.Name, user[0]._columns.Find(col => col._column == "username")._value));
-        claims.Add(new Claim(ClaimTypes.NameIdentifier, ((long)user[0]._columns.Find(col => col._column == "id")._value).ToString()));
+        claims.Add(new Claim(ClaimTypes.Name, ((long)user[0]._columns.Find(col => col._column == "id")._value).ToString()));
+        claims.Add(new Claim(ClaimTypes.GivenName, user[0]._columns.Find(col => col._column == "username")._value));
         claims.Add(new Claim(ClaimTypes.Email, email));
         claims.Add(new Claim(ClaimTypes.Role, "User"));
         Console.WriteLine("User logged in: " + user[0]._columns.Find(col => col._column == "username")._value);
