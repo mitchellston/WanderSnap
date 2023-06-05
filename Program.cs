@@ -5,8 +5,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddAuthentication("default").AddCookie("default", config =>
 {
     config.Cookie.Name = "tokenCookie";
-    config.LoginPath = "/auth/Login";
-    config.AccessDeniedPath = "/auth/Login";
+    config.LoginPath = "/Login";
+    config.AccessDeniedPath = "/Login";
     config.ExpireTimeSpan = TimeSpan.FromHours(1);
     config.SlidingExpiration = true;
     config.Cookie.HttpOnly = true;

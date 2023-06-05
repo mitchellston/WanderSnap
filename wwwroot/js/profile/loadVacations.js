@@ -9,6 +9,7 @@ vacationsContainerElement.childNodes.forEach((element) => {
   $.ajax({
     url: "?handler=Vacations",
     method: "GET",
+    type: "GET",
     data: { which: index },
     success: ({ data, message, success }) => {
       console.log(data);

@@ -39,7 +39,7 @@ const saveProfile = () => {
     url: "?handler=EditProfile",
     method: "POST",
     type: "POST",
-    data: { data: JSON.stringify(dataToUpdate) },
+    data: { data: dataToUpdate },
     error: (responseJSON) => {
       console.log(responseJSON);
       const editButton = document.createElement("div");

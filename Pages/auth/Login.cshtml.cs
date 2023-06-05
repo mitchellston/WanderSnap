@@ -14,6 +14,8 @@ public class LoginModel : PageModel
     private DbHandler _DB = new DbHandler();
 
     private Hashing _Hashing = new Hashing();
+    [BindProperty(SupportsGet = true)]
+    public string? ReturnUrl { get; set; }
 
     [BindProperty(SupportsGet = false), EmailAddress(ErrorMessage = "The email input should be a valid email adress"), Required(ErrorMessage = "Please enter your email address.")]
     public string email { get; set; }
@@ -69,7 +71,7 @@ public class LoginModel : PageModel
         // Sign in the user
         HttpContext.SignInAsync(principal);
 
-        return RedirectToPage("/Index");
+        return Redirect(this.ReturnUrl ?? "/Index");
     }
 }
 

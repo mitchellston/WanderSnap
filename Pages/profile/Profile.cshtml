@@ -7,14 +7,15 @@ Model._User.username; }
 @if (Model._User.id.ToString() == User.Identity.Name) {
 <script src="~/js/profile/editProfile.js" defer></script>
 }
-<section class="flex gap-2 w-full m-2">
+<section class="flex gap-2 w-full m-2 mt-0 pt-2">
     <div>
         <img class="rounded-full object-cover w-32 h-32"
             src="https://www.howtogeek.com/wp-content/uploads/2021/07/Discord-Logo-Lede.png?height=200p&trim=2,2,2,2"
             alt="Profile image" />
     </div>
     <div class="relative flex-grow">
-        <h1 class="text-2xl font-bold editable" data-column="username" data-element="input" data-type="text">
+        <h1 class="text-2xl dark:text-white font-bold editable" data-column="username" data-element="input"
+            data-type="text">
             @Model._User.username</h1>
         <p class="text-gray-500 flex">
             <span class="editable" data-column="description"
@@ -33,7 +34,7 @@ Model._User.username; }
 </section>
 <hr />
 <section id="vacations" class="m-1">
-    <h1 class="text-2xl font-bold">Vacations</h1>
+    <h1 class="text-2xl font-bold dark:text-white">Vacations</h1>
     <div class="flex gap-1 justify-center flex-wrap">
         @for(var i = 0; i < Model._HowManyVacations; i++) { <div class="max-w-[100vw] w-96 h-60">
             <div role="loading"
@@ -59,14 +60,15 @@ Model._User.username; }
     }
 
     @if (Model._User.id.ToString() == User.Identity.Name) {
-    <div class="ignore w-96 max-w-[100vw] h-60 bg-gradient-to-tr from-green-400 to-blue-500">
+    <a asp-page="/profile/vacation/AddVacation"
+        class="ignore w-96 max-w-[100vw] h-60 bg-gradient-to-tr from-green-400 to-blue-500">
         <div class="flex flex-col group hover:bg-slate-600/30 transition-all h-full w-full justify-center items-center">
             <span class="text-white text-6xl">+</span>
             <p class="text-center content-end text-white group-hover:opacity-100 opacity-0 transition-all">
                 Add vacation!
             </p>
         </div>
-    </div>
+    </a>
     }
     </div>
 </section>

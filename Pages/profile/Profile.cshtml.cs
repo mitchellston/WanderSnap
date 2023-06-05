@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using P4_Vacation_photos.Classes;
 using P4_Vacation_photos.Classes.api;
@@ -45,7 +44,7 @@ public class ProfileModel : PageModel
         });
         return Page();
     }
-    [HttpPost, IgnoreAntiforgeryToken(Order = 1001)]
+    [HttpPost]
     public JsonResult OnPostEditProfile([FromForm] ProfilePostEditProfile data)
     {
         var response = new ApiResponse<bool>(false, "Nothing to change", false);
@@ -80,7 +79,7 @@ public class ProfileModel : PageModel
         long userId = userFetch[0]._columns.Find(col => col._column == "id")._value;
         var vacationFetch = this._DB._Provider.select("Vacation", new string[] { "id", "User", "name", "description", "start", "end" }, new Models.DB.Primitives.Where[] {
             new Models.DB.Primitives.Where("User", Models.DB.Primitives.Compare.Equal, userId.ToString()),
-        }, 1, data.which);
+        }, 1, offset: data.which);
         if (vacationFetch.Count() != 1)
         {
             return new JsonResult(response);
@@ -88,14 +87,15 @@ public class ProfileModel : PageModel
         var photoFetch = this._DB._Provider.select("Vacation_Photo", new string[] { "path" }, new Models.DB.Primitives.Where[] {
             new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, ((long) vacationFetch[0]._columns.Find(col => col._column == "id")._value).ToString()),
         }, 1);
+
         var vacation = new Vacation(
-            vacationFetch[0]._columns.Find(col => col._column == "id")._value,
-            vacationFetch[0]._columns.Find(col => col._column == "User")._value,
-            vacationFetch[0]._columns.Find(col => col._column == "name")._value,
-            vacationFetch[0]._columns.Find(col => col._column == "description")._value,
-            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(vacationFetch[0]._columns.Find(col => col._column == "start")._value),
-            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(vacationFetch[0]._columns.Find(col => col._column == "end")._value),
-            photoFetch.Count() == 1 ? new string[] { photoFetch[0]._columns.Find(col => col._column == "id")._value.ToString() } : new string[] { }
+            vacationFetch[0]._columns.Find(col => col._column == "id")?._value,
+            vacationFetch[0]._columns.Find(col => col._column == "User")?._value,
+            vacationFetch[0]._columns.Find(col => col._column == "name")?._value,
+            vacationFetch[0]._columns.Find(col => col._column == "description")?._value,
+            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(vacationFetch[0]._columns.Find(col => col._column == "start")?._value),
+            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(vacationFetch[0]._columns.Find(col => col._column == "end")?._value),
+            photoFetch.Count() == 1 ? new string[] { (photoFetch[0]._columns.Find(col => col._column == "id")?._value.ToString()) ?? "" } : new string[] { }
         );
 
         return response.CreateJsonResult(true, "Found", vacation);

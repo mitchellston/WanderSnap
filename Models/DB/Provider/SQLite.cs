@@ -34,7 +34,7 @@ namespace P4_Vacation_photos.Models.DB.Providers
         public Row[] select(string table, string[]? columns = null, Where[]? where = null, int? limit = 1, int? offset = null)
         {
             List<Row> rows = new List<Row>();
-            string query = $"SELECT {(columns != null && columns.Length > 0 ? $"{string.Join(", ", columns.Select(x => '`' + x + '`'))}" : "*")} FROM `{table}` {(where != null && where.Length > 0 ? $"WHERE {string.Join(" AND ", generateWhereClause(where))}" : "")} {(limit != null ? $"LIMIT {limit}" : "")} {(offset != null ? $"OFFSET {offset}" : "")}";
+            string query = $"SELECT {(columns != null && columns.Length > 0 ? $"{string.Join(", ", columns.Select(x => '`' + x + '`'))}" : "*")} FROM `{table}` {(where != null && where.Length > 0 ? $"WHERE {string.Join(" AND ", generateWhereClause(where))}" : "")} {(limit != null ? $"LIMIT {limit}" : "")} {(offset != null ? $"OFFSET {offset}" : "")} ";
             SqliteCommand command = new SqliteCommand(query, _connection);
             if (where != null)
                 foreach (Where whereClause in where)
