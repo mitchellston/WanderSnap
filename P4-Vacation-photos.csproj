@@ -12,7 +12,4 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.data.sqlite" Version="7.0.5" />
   </ItemGroup>
-  <Target Name="Tailwind" BeforeTargets="Build">
-    <Exec Command="pnpm run css:build" />
-  </Target>
 </Project>

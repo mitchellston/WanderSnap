@@ -45,32 +45,33 @@ public class ProfileModel : PageModel
         return Page();
     }
     [HttpPost]
-    public JsonResult OnPostEditProfile([FromForm] ProfilePostEditProfile data)
+    public JsonResult OnPostEditProfile([FromBody] ProfilePostEditProfile data)
     {
-        var response = new ApiResponse<bool>(false, "Nothing to change", false);
-        if (User.Identity.IsAuthenticated == false) return response.CreateJsonResult(false, "You are not allowed to do this", false);
+        var response = new ApiResponse<string>(false, "Nothing to change", "");
+        if (User.Identity?.IsAuthenticated == false) return response.CreateJsonResult(false, "You are not allowed to do this", "");
         var updatingData = new List<Models.DB.Primitives.Column>() { };
         data.GetType().GetFields().ToList().ForEach(field =>
         {
-            if (field.GetValue(data) != null || field.GetValue(data).ToString() != "")
+            if (field.GetValue(data) != null || field.GetValue(data)?.ToString() != "")
             {
                 updatingData.Add(new Models.DB.Primitives.Column(field.Name, field.GetValue(data).ToString()));
             }
         });
-        if (updatingData.Count() == 0) return response.CreateJsonResult(false, "Nothing to change", false);
+        if (updatingData.Count() == 0) return response.CreateJsonResult(false, "Nothing to change", "");
         this._DB._Provider.update("User", updatingData, new Models.DB.Primitives.Where[] {
             new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, User.Identity.Name)
         });
-        return response.CreateJsonResult(true, "Profile updated", true);
+        return response.CreateJsonResult(true, "Profile updated", "");
     }
     [HttpGet]
     public JsonResult OnGetVacations([FromQuery] ProfileGetVacations data)
     {
         var response = new ApiResponse<Vacation?>(false, "Nothing found", null);
+        if (data == null) return new JsonResult(response);
         var userFetch = this._DB._Provider.select("User",
-        new string[] { "id" },
-        new Models.DB.Primitives.Where[] {
-            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, Username)
+            new string[] { "id" },
+            new Models.DB.Primitives.Where[] {
+                new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, Username)
         });
         if (userFetch.Count() != 1)
         {
@@ -87,7 +88,6 @@ public class ProfileModel : PageModel
         var photoFetch = this._DB._Provider.select("Vacation_Photo", new string[] { "path" }, new Models.DB.Primitives.Where[] {
             new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, ((long) vacationFetch[0]._columns.Find(col => col._column == "id")._value).ToString()),
         }, 1);
-
         var vacation = new Vacation(
             vacationFetch[0]._columns.Find(col => col._column == "id")?._value,
             vacationFetch[0]._columns.Find(col => col._column == "User")?._value,
@@ -95,9 +95,8 @@ public class ProfileModel : PageModel
             vacationFetch[0]._columns.Find(col => col._column == "description")?._value,
             new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(vacationFetch[0]._columns.Find(col => col._column == "start")?._value),
             new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(vacationFetch[0]._columns.Find(col => col._column == "end")?._value),
-            photoFetch.Count() == 1 ? new string[] { (photoFetch[0]._columns.Find(col => col._column == "id")?._value.ToString()) ?? "" } : new string[] { }
+            photoFetch.Count() == 1 ? new string[] { (photoFetch[0]._columns.Find(col => col._column == "path")?._value.ToString()) ?? "" } : new string[] { }
         );
-
         return response.CreateJsonResult(true, "Found", vacation);
     }
 }

@@ -1,5 +1,8 @@
 namespace P4_Vacation_photos.Classes;
-public class ProfileGetVacations
+public class ProfilePostEditProfile
 {
-    public int which { get; set; }
+    public string? username { get; set; }
+    public string? email { get; set; }
+    public string? description { get; set; }
+    public string? profilePicture { get; set; }
 }

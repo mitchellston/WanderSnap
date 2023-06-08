@@ -14,11 +14,14 @@ vacationsContainerElement.childNodes.forEach((element) => {
     success: ({ data, message, success }) => {
       console.log(data);
       $(element).html(`
-        <a href="#" class="relative group hover:bg-slate-600 bg-slate-600 max-w-[100vw] w-96 h-60">
+        <a href="${window.location.href}/vacation/${
+        data.id
+      }" class="relative group hover:bg-slate-600 bg-slate-600 max-w-[100vw] w-96 h-60">
             <img class="z-[-1] w-full h-full object-center"
                 src="${
                   data.images.length > 0
-                    ? data.images[0].url
+                    ? "/profile/vacations/" + data.images[0] ??
+                      "https://via.placeholder.com/150"
                     : "https://via.placeholder.com/150"
                 }"
                 alt="${data.name} photo" />

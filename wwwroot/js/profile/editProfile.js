@@ -25,21 +25,25 @@ const editProfile = () => {
   }
 };
 const dataToUpdate = {};
-for (let key in editData) {
-  if (
-    $(editData[key].replacedElement).val() !==
-    $(editData[key].formerElement).text()
-  ) {
-    dataToUpdate[key] = $(editData[key].replacedElement).val();
-  }
-}
+
 const saveProfile = () => {
   $("#editProfile").html("");
+  for (let key in editData) {
+    console.log($(editData[key].replacedElement).val());
+    console.log($(editData[key].formerElement).text());
+    if (
+      $(editData[key].replacedElement).val() !==
+      $(editData[key].formerElement).text()
+    ) {
+      dataToUpdate[key] = $(editData[key].replacedElement).val();
+    } else {
+      dataToUpdate[key] = null;
+    }
+  }
   $.ajax({
     url: "?handler=EditProfile",
-    method: "POST",
     type: "POST",
-    data: { data: dataToUpdate },
+    data: JSON.stringify({ data: dataToUpdate }),
     error: (responseJSON) => {
       console.log(responseJSON);
       const editButton = document.createElement("div");
