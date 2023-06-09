@@ -7,14 +7,16 @@ public class ProfileModel : PageModel
 {
     private DbHandler _DB = new DbHandler();
     private readonly ILogger<IndexModel> _logger;
+    private IWebHostEnvironment _environment;
     public User _User;
     public long _HowManyVacations = 0;
     [BindProperty(SupportsGet = true)]
     public string Username { get; set; }
 
-    public ProfileModel(ILogger<IndexModel> logger)
+    public ProfileModel(IWebHostEnvironment environment, ILogger<IndexModel> logger)
     {
         _logger = logger;
+        _environment = environment;
     }
 
     public IActionResult OnGet()
@@ -78,6 +80,24 @@ public class ProfileModel : PageModel
             new Models.DB.Primitives.Where("User", Models.DB.Primitives.Compare.Equal, User.Identity?.Name ?? "")
         }, 1);
         if (vacationFetch.Count() != 1) return response.CreateJsonResult(false, "Can't find this vacation", null);
+        // Delete all the photos and records in db (multithreaded)
+        Thread thread = new Thread(() =>
+        {
+            var photosFetch = this._DB._Provider.select("Vacation_Photo", new string[] { "id", "path" }, new Models.DB.Primitives.Where[] {
+                new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, data.which.ToString() ?? ""),
+            });
+            for (var i = 0; i < photosFetch.Count(); i++)
+            {
+                var photo = photosFetch[i];
+                this._DB._Provider.delete("Vacation_Photo", new Models.DB.Primitives.Where[] {
+                    new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, photosFetch[i]._columns.Find(col => col._column == "id")._value),
+                    new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, data.which.ToString() ?? ""),
+                }, 0);
+                var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/vacations", photo._columns.Find(col => col._column == "path")._value);
+                System.IO.File.Delete(file);
+            }
+        });
+        thread.Start();
         // Delete the vacation
         this._DB._Provider.delete("Vacation", new Models.DB.Primitives.Where[] {
             new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, data.which.ToString() ?? ""),

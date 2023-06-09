@@ -401,3 +401,6 @@ FodyWeavers.xsd
 *.sqlite3
 *.sqlite
 *.db
+
+# uploaded files
+uploads/
