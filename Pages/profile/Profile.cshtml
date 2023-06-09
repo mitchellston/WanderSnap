@@ -21,7 +21,7 @@ Model._User.username; }
         <p class="text-gray-500 flex">
             <span class="editable" data-column="description"
                 data-element="textarea">@Model._User.description</span><span>&nbsp; -
-                Joined on:
+                Started exploring on:
                 @Model._User.createdAt.ToLocalTime().ToString("MM/dd/yyyy")</span>
         </p>
         @if (Model._User.id.ToString() == User.Identity.Name) {
@@ -35,7 +35,7 @@ Model._User.username; }
 </section>
 <hr />
 <section id="vacations" class="m-1">
-    <h1 class="text-2xl font-bold dark:text-white">Vacations</h1>
+    <h1 class="text-2xl font-bold dark:text-white">Adventures</h1>
     <div class="flex gap-1 justify-center flex-wrap">
         @for(var i = 0; i < Model._HowManyVacations; i++) { <div class="max-w-[100vw] relative w-96 h-60">
             <div role="loading" class="space-y-8 h-full relative md:space-y-0  md:space-x-8 md:flex md:items-center">
@@ -65,7 +65,7 @@ Model._User.username; }
         <div class="flex flex-col group hover:bg-slate-600/30 transition-all h-full w-full justify-center items-center">
             <span class="text-white text-6xl">+</span>
             <p class="text-center content-end text-white group-hover:opacity-100 opacity-0 transition-all">
-                Add vacation!
+                Add adventure
             </p>
         </div>
     </a>
