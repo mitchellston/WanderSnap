@@ -45,22 +45,26 @@ public class ProfileModel : PageModel
         return Page();
     }
     [HttpPost]
-    public JsonResult OnPostEditProfile([FromBody] ProfilePostEditProfile data)
+    public JsonResult OnPostEditProfile([FromBody] ProfilePostEditProfile? data)
     {
         var response = new ApiResponse<string>(false, "Nothing to change", "");
+
+        if (data == null) return response.CreateJsonResult(false, "Nothing to change", "");
+
         if (User.Identity?.IsAuthenticated == false) return response.CreateJsonResult(false, "You are not allowed to do this", "");
+
         var updatingData = new List<Models.DB.Primitives.Column>() { };
-        data.GetType().GetFields().ToList().ForEach(field =>
+        data.GetType().GetProperties().ToList().ForEach(property =>
         {
-            if (field.GetValue(data) != null || field.GetValue(data)?.ToString() != "")
+            if (property.GetValue(data) != null && property.GetValue(data)?.ToString() != "")
             {
-                updatingData.Add(new Models.DB.Primitives.Column(field.Name, field.GetValue(data).ToString()));
+                updatingData.Add(new Models.DB.Primitives.Column(property.Name, property.GetValue(data)?.ToString()));
             }
         });
         if (updatingData.Count() == 0) return response.CreateJsonResult(false, "Nothing to change", "");
         this._DB._Provider.update("User", updatingData, new Models.DB.Primitives.Where[] {
-            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, User.Identity.Name)
-        });
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, User.Identity?.Name ?? "")
+        }, 0);
         return response.CreateJsonResult(true, "Profile updated", "");
     }
     [HttpGet]

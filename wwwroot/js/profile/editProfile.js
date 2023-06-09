@@ -29,8 +29,6 @@ const dataToUpdate = {};
 const saveProfile = () => {
   $("#editProfile").html("");
   for (let key in editData) {
-    console.log($(editData[key].replacedElement).val());
-    console.log($(editData[key].formerElement).text());
     if (
       $(editData[key].replacedElement).val() !==
       $(editData[key].formerElement).text()
@@ -40,38 +38,19 @@ const saveProfile = () => {
       dataToUpdate[key] = null;
     }
   }
+  console.log(dataToUpdate);
   $.ajax({
     url: "?handler=EditProfile",
     type: "POST",
-    data: JSON.stringify({ data: dataToUpdate }),
-    error: (responseJSON) => {
-      console.log(responseJSON);
-      const editButton = document.createElement("div");
-      editButton.innerHTML = `<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit profile <span class="text-red-700"> - Failed </span></button>`;
-      editButton.addEventListener("click", editProfile);
-      $("#editProfile").append(editButton);
-      setTimeout(() => {
-        editButton.innerHTML = `<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit profile</button>`;
-      }, 3000);
-      for (let key in editData) {
-        $(editData[key].replacedElement).replaceWith(
-          editData[key].formerElement
-        );
-      }
+    headers: {
+      RequestVerificationToken: $(
+        'input:hidden[name="__RequestVerificationToken"]'
+      ).val(),
     },
-    success: ({ data, message, success }) => {
-      if (success) {
-        const editButton = document.createElement("div");
-        editButton.innerHTML = `<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit profile</button>`;
-        editButton.addEventListener("click", editProfile);
-        $("#editProfile").append(editButton);
-        for (let key in editData) {
-          $(editData[key].replacedElement).replaceWith(
-            editData[key].formerElement
-          );
-        }
-      }
-    },
+    contentType: "application/json; charset=utf-8",
+    data: JSON.stringify(dataToUpdate),
+    error: failedEdit,
+    success: successEdit,
   });
 };
 const cancelEdit = () => {
@@ -85,3 +64,32 @@ const cancelEdit = () => {
   }
 };
 $("#editProfile").children("button").on("click", editProfile);
+
+const failedEdit = () => {
+  const editButton = document.createElement("div");
+  editButton.innerHTML = `<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit profile <span class="text-red-700"> - Failed </span></button>`;
+  editButton.addEventListener("click", editProfile);
+  $("#editProfile").append(editButton);
+  setTimeout(() => {
+    editButton.innerHTML = `<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit profile</button>`;
+  }, 3000);
+  for (let key in editData) {
+    $(editData[key].replacedElement).replaceWith(editData[key].formerElement);
+  }
+};
+const successEdit = ({ data, message, success }) => {
+  if (success) {
+    const editButton = document.createElement("div");
+    editButton.innerHTML = `<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit profile</button>`;
+    editButton.addEventListener("click", editProfile);
+    $("#editProfile").append(editButton);
+    for (let key in editData) {
+      const el = $(editData[key].formerElement);
+      el.text($(editData[key].replacedElement).val());
+      $(editData[key].replacedElement).replaceWith(el);
+    }
+  } else {
+    window.alert(message);
+    failedEdit();
+  }
+};

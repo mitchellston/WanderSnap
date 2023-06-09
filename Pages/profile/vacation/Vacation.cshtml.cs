@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using P4_Vacation_photos.Classes;
+using P4_Vacation_photos.Classes.api;
 using System.ComponentModel.DataAnnotations;
 namespace P4_Vacation_photos.Pages;
 public class VacationsModel : PageModel
@@ -72,13 +73,12 @@ public class VacationsModel : PageModel
         });
         return Page();
     }
-    [IgnoreAntiforgeryToken(Order = 1001)]
+
     [HttpPost]
     public IActionResult OnPostAddPhoto()
     {
         // validate input
         this._HasError = false;
-        Console.WriteLine("fweoiwefoifehwowefh qhdoqwhd");
         if (ModelState.IsValid == false)
         {
             this.OnGet();
@@ -134,6 +134,35 @@ public class VacationsModel : PageModel
         if (file.Length > 1000000) return (error: "The photo is too big", status: false);
         if (file.ContentType != "image/jpeg" && file.ContentType != "image/png") return (error: "The photo is not a jpeg or png", status: false);
         return (error: "", status: true);
+    }
+
+    [HttpGet]
+    public JsonResult OnGetVacations([FromQuery] ProfileGetVacations data)
+    {
+        // validate input
+        var response = new ApiResponse<Image?>(false, "Nothing found", null);
+        if (data == null) return new JsonResult(response);
+        // check if the vacation for the user exists
+        var vacationFetch = this._DB._Provider.select("Vacation", new string[] { "id" }, new Models.DB.Primitives.Where[] {
+            new Models.DB.Primitives.Where("User", Models.DB.Primitives.Compare.Equal, this.Username),
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, this.VacationId.ToString())
+        }, 1);
+        if (vacationFetch.Count() != 1)
+        {
+            return new JsonResult(response);
+        }
+        // get the photo
+        var photoFetch = this._DB._Provider.select("Vacation_Photo", null, new Models.DB.Primitives.Where[] {
+            new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, ((long) vacationFetch[0]._columns.Find(col => col._column == "id")._value).ToString()),
+        }, 1, offset: data.which);
+        // return the photo
+        var vacation = new Image(
+            photoFetch[0]._columns.Find(col => col._column == "id")?._value,
+            photoFetch[0]._columns.Find(col => col._column == "description")?._value,
+            photoFetch[0]._columns.Find(col => col._column == "path")?._value,
+            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(photoFetch[0]._columns.Find(col => col._column == "date")?._value)
+        );
+        return response.CreateJsonResult(true, "Found", vacation);
     }
 }
 

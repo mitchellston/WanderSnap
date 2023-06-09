@@ -79,7 +79,7 @@ namespace P4_Vacation_photos.Models.DB.Providers
         /// <param name="table">The table to update the row in</param>
         /// <param name="data">The data to update</param>
         /// <param name="where">The where clause</param>
-        /// <param name="limit">The limit of rows to update</param>
+        /// <param name="limit">The limit of rows to update (only works if SQLITE_ENABLE_UPDATE_DELETE_LIMIT is added add compile time)</param>
         public bool update(string table, List<P4_Vacation_photos.Models.DB.Primitives.Column> data, Where[]? where = null, int limit = 1)
         {
             string query = $"UPDATE `{table}` SET {string.Join(", ", data.Select(x => '`' + x._column + "` = @" + x._column))} {(where != null && where.Length > 0 ? $"WHERE {string.Join(" AND ", generateWhereClause(where))}" : "")} {(limit > 0 ? $"LIMIT {limit}" : "")}";
@@ -98,7 +98,7 @@ namespace P4_Vacation_photos.Models.DB.Providers
         /// <summary>Deletes a row(s) from the database</summary>
         /// <param name="table">The table to delete the row from</param>
         /// <param name="where">The where clause - HAS TO HAVE AT LEAST 1 WHERE CLAUSE</param>
-        /// <param name="limit">The limit of rows to delete</param>
+        /// <param name="limit">The limit of rows to delete (only works if SQLITE_ENABLE_UPDATE_DELETE_LIMIT is added add compile time)</param>
         public bool delete(string table, Where[]? where = null, int limit = 1)
         {
             if (where == null || where.Length < 1)
