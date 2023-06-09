@@ -113,7 +113,7 @@ public class VacationsModel : PageModel
         }
         // upload the file
         var fileName = "vacation_" + this.VacationId + "_photo_" + DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds + "." + this.form_photo.ContentType.Split("/")[1];
-        var file = Path.Combine(_environment.ContentRootPath, "wwwroot/profile/vacations", fileName);
+        var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/vacations", fileName);
         using (var filestream = new FileStream(file, FileMode.Create))
         {
             this.form_photo.CopyTo(filestream);

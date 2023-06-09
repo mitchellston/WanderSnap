@@ -6,6 +6,7 @@ Model._User.username; }
 <script src="~/js/profile/loadVacations.js" defer></script>
 @if (Model._User.id.ToString() == User.Identity.Name) {
 <script src="~/js/profile/editProfile.js" defer></script>
+<script src="~/js/profile/deleteVacation.js" defer></script>
 }
 <section class="flex gap-2 w-full m-2 mt-0 pt-2">
     <div>
@@ -36,7 +37,7 @@ Model._User.username; }
 <section id="vacations" class="m-1">
     <h1 class="text-2xl font-bold dark:text-white">Vacations</h1>
     <div class="flex gap-1 justify-center flex-wrap">
-        @for(var i = 0; i < Model._HowManyVacations; i++) { <div class="max-w-[100vw] w-96 h-60">
+        @for(var i = 0; i < Model._HowManyVacations; i++) { <div class="max-w-[100vw] relative w-96 h-60">
             <div role="loading" class="space-y-8 h-full relative md:space-y-0  md:space-x-8 md:flex md:items-center">
                 <div
                     class="flex absolute items-center justify-center w-full h-full bg-gray-300 rounded sm:w-96 dark:bg-gray-700">
@@ -71,4 +72,31 @@ Model._User.username; }
     }
     </div>
 </section>
+@if (Model._User.id.ToString() == User.Identity.Name) {
+<input type="hidden" value="True" id="isUser">
+<section class="m-1 mt-2 flex justify-end">
+
+    <dialog data-id="null" id="confirmDeleteModal" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+                <button for="confirmDeleteModal"
+                    class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <h3 class="font-bold text-lg">Are you sure you want to delete this vacation</h3>
+            <p class="text-sm">This action cannot be undone</p>
+            <div class="flex gap-3 justify-end mt-3">
+                <form method="dialog">
+                    <button class="btn btn-sm btn-ghost">Cancel</button>
+                </form>
+                <button id="confirmedDeleteButton"
+                    class="bg-red-900 rounded-lg p-3 pt-1 pb-1 hover:bg-red-900/50 ">Delete</button>
+            </div>
+
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button class="cursor-default">close</button>
+        </form>
+    </dialog>
+</section>
+}
 @Html.AntiForgeryToken()

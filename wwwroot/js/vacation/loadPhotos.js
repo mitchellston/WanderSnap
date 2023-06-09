@@ -19,7 +19,7 @@ photoContainerElement.childNodes.forEach((element) => {
       $(element).html(`
         <div class="relative  w-96 group hover:bg-slate-600 bg-slate-600 max-w-[100vw]">
             <img class="z-[-1] w-full h-full object-center"
-                src="${"/profile/vacations/" + data.path}"
+                src="${"/uploads/profile/vacations/" + data.path}"
                 alt="${data.description} photo" />
             <div
                 class="absolute bottom-0 p-0.5 text-ellipsis overflow-hidden h-20 max-h-[30%] bg-black bg-opacity-30 group-hover:bg-opacity-50 transition-all max-w-[100vw] text-white w-96">

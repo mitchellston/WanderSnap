@@ -16,7 +16,7 @@
       <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
         <ul class="space-y-2 font-medium">
           <li>
-            <a href="#"
+            <a asp-page="/Index"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
 
               <svg fill="currentColor"
@@ -49,7 +49,6 @@
               *@
             </a>
           </li>
-          }
           <li>
             <a href="#"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -58,10 +57,11 @@
                 fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
                 <path d="M14.5 14.5l-4-4m-4 2a6 6 0 110-12 6 6 0 010 12z" stroke="currentColor"></path>
               </svg>
-              <span class="flex-1 ml-3 whitespace-nowrap">Search users</span>
+              <span class="flex-1 ml-3 whitespace-nowrap">Search other wanderers</span>
 
             </a>
           </li>
+          }
           <li>
             @if (!User.Identity.IsAuthenticated)
             {

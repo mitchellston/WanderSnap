@@ -5,31 +5,34 @@ ViewData["Title"] = "Vakantie naar " + Model._Vacation?.name;
 }
 <script src="~/js/vacation/loadPhotos.js" defer></script>
 
-<section class="w-full m-2 mt-0 pt-2">
-    <div class="flex flex-col md:flex-row md:space-x-4">
-        <div class="flex flex-col w-full md:w-1/2">
-            <div class="flex flex-col w-full">
-                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                    @Model._Vacation?.name
-                </h1>
-                <p class="text-gray-600 p-5 dark:text-gray-400">
-                    @Model._Vacation?.description
-                </p>
-            </div>
-            <div class="flex flex-col w-full mt-4">
-                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">
-                    @Model._Vacation?.start.ToString("dd-MM-yyyy") -
-                    @Model._Vacation?.end.ToString("dd-MM-yyyy")
-                </h2>
+<section class="flex">
+    <div class="w-full m-2 mt-0 pt-2">
+        <div class="flex flex-col md:flex-row md:space-x-4">
+            <div class="flex flex-col w-full md:w-1/2">
+                <div class="flex flex-col w-full">
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                        @Model._Vacation?.name
+                    </h1>
+                    <p class="text-gray-600 p-5 dark:text-gray-400">
+                        @Model._Vacation?.description
+                    </p>
+                </div>
+                <div class="flex flex-col w-full mt-4">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+                        @Model._Vacation?.start.ToString("dd-MM-yyyy") -
+                        @Model._Vacation?.end.ToString("dd-MM-yyyy")
+                    </h2>
+                </div>
             </div>
         </div>
     </div>
+    <a class="btn btn-ghost" asp-page="/profile/Profile" asp-route-Username="@Model.Username">Back</a>
 </section>
 <hr />
 @if (Model._User.id.ToString() == User.Identity?.Name) {
 <section class="m-1 mt-2 flex justify-end">
-    <button class="btn" onclick="my_modal_3.showModal()">Add foto</button>
-    <dialog @(Model._HasError ? "open" : "" ) id="my_modal_3" class="modal">
+    <button class="btn" onclick="AddPhotoModal.showModal()">Add foto</button>
+    <dialog @(Model._HasError ? "open" : "" ) id="AddPhotoModal" class="modal">
         <div class="modal-box">
             <form method="dialog">
                 <button for="my-modal-3" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
@@ -63,10 +66,11 @@ ViewData["Title"] = "Vakantie naar " + Model._Vacation?.name;
                 </label>
                 <button asp-page-handler="AddPhoto" class="btn btn-primary mt-2">Add foto</button>
             </form>
-            <form method="dialog" class="modal-backdrop">
-                <button class="cursor-default">close</button>
-            </form>
+
         </div>
+        <form method="dialog" class="modal-backdrop">
+            <button class="cursor-default">close</button>
+        </form>
     </dialog>
 </section>
 }

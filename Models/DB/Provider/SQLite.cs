@@ -127,6 +127,7 @@ namespace P4_Vacation_photos.Models.DB.Providers
                 }
             return Convert.ToInt32(command.ExecuteScalar());
         }
+
         /// <summary>Generates the correct string for the where clause of the query</summary>
         private string[] generateWhereClause(Where[] where)
         {

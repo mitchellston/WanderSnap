@@ -32,6 +32,7 @@ public class RegisterModel : PageModel
     }
     public IActionResult OnPost()
     {
+        if (User.Identity.IsAuthenticated) return Page();
         // Check if the model is valid
         if (ModelState.IsValid == false)
         {

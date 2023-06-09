@@ -67,6 +67,24 @@ public class ProfileModel : PageModel
         }, 0);
         return response.CreateJsonResult(true, "Profile updated", "");
     }
+    public JsonResult OnPostDeleteVacation([FromBody] ProfileGetVacations data)
+    {
+        var response = new ApiResponse<bool?>(false, "Can't find this vacation", null);
+        if (data == null || data.which == null) return response.CreateJsonResult(false, "Can't find this vacation", null);
+        if (User.Identity?.IsAuthenticated == false) return response.CreateJsonResult(false, "You are not allowed to do this", null);
+        // Look if the user owns this vacation
+        var vacationFetch = this._DB._Provider.select("Vacation", new string[] { "id" }, new Models.DB.Primitives.Where[] {
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, data.which.ToString() ?? ""),
+            new Models.DB.Primitives.Where("User", Models.DB.Primitives.Compare.Equal, User.Identity?.Name ?? "")
+        }, 1);
+        if (vacationFetch.Count() != 1) return response.CreateJsonResult(false, "Can't find this vacation", null);
+        // Delete the vacation
+        this._DB._Provider.delete("Vacation", new Models.DB.Primitives.Where[] {
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, data.which.ToString() ?? ""),
+            new Models.DB.Primitives.Where("User", Models.DB.Primitives.Compare.Equal, User.Identity?.Name ?? "")
+        }, 0);
+        return response.CreateJsonResult(true, "Vacation deleted", null);
+    }
     [HttpGet]
     public JsonResult OnGetVacations([FromQuery] ProfileGetVacations data)
     {
