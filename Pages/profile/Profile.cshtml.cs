@@ -83,17 +83,20 @@ public class ProfileModel : PageModel
         // Delete all the photos and records in db (multithreaded)
         Thread thread = new Thread(() =>
         {
+            Console.WriteLine("Thread started for deleting photos - " + vacationFetch[0]._columns.Find(col => col._column == "id")._value.ToString() ?? "");
             var photosFetch = this._DB._Provider.select("Vacation_Photo", new string[] { "id", "path" }, new Models.DB.Primitives.Where[] {
-                new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, data.which.ToString() ?? ""),
-            });
+                new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, vacationFetch[0]._columns.Find(col => col._column == "id")._value.ToString() ?? ""),
+            }, -1);
+            Console.WriteLine("Found " + photosFetch.Count() + " photos");
             for (var i = 0; i < photosFetch.Count(); i++)
             {
                 var photo = photosFetch[i];
                 this._DB._Provider.delete("Vacation_Photo", new Models.DB.Primitives.Where[] {
-                    new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, photosFetch[i]._columns.Find(col => col._column == "id")._value),
+                    new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, photosFetch[i]._columns.Find(col => col._column == "id")._value.ToString() ?? ""),
                     new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, data.which.ToString() ?? ""),
                 }, 0);
                 var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/vacations", photo._columns.Find(col => col._column == "path")._value);
+                Console.WriteLine(file);
                 System.IO.File.Delete(file);
             }
         });
