@@ -13,7 +13,7 @@ vacationsContainerElement.childNodes.forEach((element) => {
     data: { which: index },
     success: ({ data, message, success }) => {
       $(element).html(`
-        <a href="${window.location.href}/vacation/${
+        <a href="${window.location.href}/adventure/${
         data.id
       }" class="relative group hover:bg-slate-600 bg-slate-600 max-w-[100vw] w-96 h-60">
             <img class="z-[-1] w-full h-full object-center"

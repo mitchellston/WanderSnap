@@ -1,4 +1,4 @@
-﻿@page "/profile/Profile/{Username}/vacation/{VacationId:int}"
+﻿@page "/profile/Profile/{Username}/adventure/{VacationId:int}"
 @model VacationsModel
 @{
 ViewData["Title"] = "Vakantie naar " + Model._Vacation?.name;
@@ -8,7 +8,7 @@ ViewData["Title"] = "Vakantie naar " + Model._Vacation?.name;
 }
 <script src="~/js/vacation/loadPhotos.js" defer></script>
 
-<section class="flex">
+<section class="flex relative">
     <div class="w-full m-2 mt-0 pt-2">
         <div class="flex flex-col md:flex-row md:space-x-4">
             <div class="flex flex-col w-full md:w-1/2">
@@ -29,6 +29,13 @@ ViewData["Title"] = "Vakantie naar " + Model._Vacation?.name;
             </div>
         </div>
     </div>
+    @if (Model._User.id.ToString() == User.Identity.Name) {
+    <div id="editProfile" class="absolute gap-1 flex flex-row bottom-2 right-1">
+        <a asp-page="/profile/vacation/AddVacation" asp-route-VacationId="@Model._Vacation.id"
+            class=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit
+            adventure</a>
+    </div>
+    }
     <a class="btn btn-ghost" asp-page="/profile/Profile" asp-route-Username="@Model.Username">Back</a>
 </section>
 <hr />
