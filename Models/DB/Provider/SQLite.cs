@@ -133,14 +133,13 @@ namespace P4_Vacation_photos.Models.DB.Providers
         public Row[] rawQuery(string query, (string column, dynamic value)[]? parameters = null)
         {
             SqliteCommand command = new SqliteCommand(query, _connection);
-            var execution = command.ExecuteReader();
             // parameters
             if (parameters != null)
                 foreach ((string column, dynamic value) parameter in parameters)
                 {
-                    command.Parameters.AddWithValue('@' + parameter.column, parameter.value);
+                    command.Parameters.AddWithValue(parameter.column, parameter.value);
                 }
-
+            var execution = command.ExecuteReader();
             List<Row> rows = new List<Row>();
             while (execution.Read())
             {

@@ -20,7 +20,7 @@ public class SearchModel : PageModel
     public void OnGet()
     {
         Models.DB.Primitives.Row[] users;
-        if (this.Search == null)
+        if (this.Search == null || this.Search == "")
         {
             users = this.OnGetNoSearch();
         }
@@ -62,7 +62,7 @@ public class SearchModel : PageModel
     private Models.DB.Primitives.Row[] OnGetSearch(string search)
     {
         // Get users from the database
-        return this._DB._Provider.rawQuery("SELECT * FROM `User` WHERE `username` LIKE '%@Search%' OR `email` LIKE '%@Search%'", new (string column, dynamic value)[] { (column: "Search", search) });
+        return this._DB._Provider.rawQuery("SELECT * FROM `User` WHERE `username` LIKE @Search OR `id` IS '@Search'", new (string column, dynamic value)[] { (column: "@Search", '%' + search + '%') });
     }
     private Models.DB.Primitives.Row[] OnGetNoSearch()
     {
