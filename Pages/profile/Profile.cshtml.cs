@@ -96,8 +96,10 @@ public class ProfileModel : PageModel
                     new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, data.which.ToString() ?? ""),
                 }, 0);
                 var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/vacations", photo._columns.Find(col => col._column == "path")._value);
-                Console.WriteLine(file);
-                System.IO.File.Delete(file);
+                if (System.IO.File.Exists(file))
+                {
+                    System.IO.File.Delete(file);
+                }
             }
         });
         thread.Start();

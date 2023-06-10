@@ -101,12 +101,22 @@ public class VacationsModel : PageModel
             return Page();
         }
         // check if the vacation exists
-        if (this._DB._Provider.count("Vacation", new Models.DB.Primitives.Where[] {
+        var vacation = this._DB._Provider.select("Vacation", null, new Models.DB.Primitives.Where[] {
             new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, this.VacationId.ToString()),
             new Models.DB.Primitives.Where("User", Models.DB.Primitives.Compare.Equal, User.Identity.Name)
-        }) < 1)
+        });
+        if (vacation.Count() < 1)
         {
             ModelState.AddModelError("form_photo", "The vacation does not exist");
+            this.OnGet();
+            this._HasError = true;
+            return Page();
+        }
+        // check if the date is not earlier than the vacation start
+        var vacationStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(vacation[0]._columns.Find(col => col._column == "start")?._value);
+        if (this.form_date < vacationStart)
+        {
+            ModelState.AddModelError("form_date", "The date cannot be earlier than the vacation start");
             this.OnGet();
             this._HasError = true;
             return Page();
@@ -163,6 +173,43 @@ public class VacationsModel : PageModel
             new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(photoFetch[0]._columns.Find(col => col._column == "date")?._value)
         );
         return response.CreateJsonResult(true, "Found", vacation);
+    }
+    public IActionResult OnPostDeletePhoto([FromBody] ProfileGetVacations data)
+    {
+        // validate input
+        var response = new ApiResponse<Image?>(false, "Nothing found", null);
+        if (data == null || data.which == null) return new JsonResult(response);
+        // check if the vacation for the user exists
+        var vacationFetch = this._DB._Provider.select("Vacation", new string[] { "id" }, new Models.DB.Primitives.Where[] {
+            new Models.DB.Primitives.Where("User", Models.DB.Primitives.Compare.Equal, User.Identity.Name),
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, this.VacationId.ToString())
+        }, 1);
+        if (vacationFetch.Count() != 1)
+        {
+            return response.CreateJsonResult(false, "You are not allowed to delete this photo", null);
+        }
+        // get the photo
+        var photoFetch = this._DB._Provider.select("Vacation_Photo", null, new Models.DB.Primitives.Where[] {
+            new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, ((long) vacationFetch[0]._columns.Find(col => col._column == "id")._value).ToString()),
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, data.which.ToString())
+        }, 1);
+        // check if the photo exists
+        if (photoFetch.Count() != 1)
+        {
+            return response.CreateJsonResult(false, "You are not allowed to delete this photo", null);
+        }
+        // delete the photo (from the database)
+        var photoDelete = this._DB._Provider.delete("Vacation_Photo", new Models.DB.Primitives.Where[] {
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, ((long) photoFetch[0]._columns.Find(col => col._column == "id")._value).ToString()),
+            new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, ((long) vacationFetch[0]._columns.Find(col => col._column == "id")._value).ToString())
+        }, -1);
+        // delete the file
+        var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/vacations", photoFetch[0]._columns.Find(col => col._column == "path")?._value);
+        if (System.IO.File.Exists(file))
+        {
+            System.IO.File.Delete(file);
+        }
+        return response.CreateJsonResult(true, "Deleted", null);
     }
 }
 
