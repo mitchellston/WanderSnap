@@ -23,6 +23,7 @@ public class ProfileModel : PageModel
 
     public IActionResult OnGet()
     {
+        // if userName is not id, but username, then redirect to the id
         bool usesId = Int64.TryParse(Username, out long id);
         var user = this._DB._Provider.select("User",
         new string[] { "id", "username", "email", "description", "created_at", "profile_picture" },
@@ -31,45 +32,79 @@ public class ProfileModel : PageModel
             new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, Username)
             : new Models.DB.Primitives.Where("username", Models.DB.Primitives.Compare.Equal, Username)
         });
-        if (usesId == false) return RedirectToPage("/profile/Profile", null, new { Username = user[0]._columns.Find(col => col._column == "id")._value });
+        if (usesId == false) return RedirectToPage("/profile/Profile", null, new { Username = user[0]._columns.Find(col => col._column == "id")?._value });
         if (user.Count() != 1) return RedirectToPage("/Index");
-
-        DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(user[0]._columns.Find(col => col._column == "created_at")._value);
+        // set the user
+        DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(user[0]._columns.Find(col => col._column == "created_at")?._value);
         this._User = new User(
-            user[0]._columns.Find(col => col._column == "id")._value,
-            user[0]._columns.Find(col => col._column == "username")._value,
-            user[0]._columns.Find(col => col._column == "email")._value,
-            user[0]._columns.Find(col => col._column == "description")._value,
-            user[0]._columns.Find(col => col._column == "profile_picture")._value,
+            user[0]._columns.Find(col => col._column == "id")?._value,
+            user[0]._columns.Find(col => col._column == "username")?._value,
+            user[0]._columns.Find(col => col._column == "email")?._value,
+            user[0]._columns.Find(col => col._column == "description")?._value,
+            user[0]._columns.Find(col => col._column == "profile_picture")?._value == "" ? null : user[0]._columns.Find(col => col._column == "profile_picture")?._value,
             start
         );
+        // set the number of vacations
         this._HowManyVacations = this._DB._Provider.count("Vacation", new Models.DB.Primitives.Where[] {
             new Models.DB.Primitives.Where("User", Models.DB.Primitives.Compare.Equal, this._User.id.ToString())
         });
         return Page();
     }
     [HttpPost]
-    public JsonResult OnPostEditProfile([FromBody] ProfilePostEditProfile? data)
+    public JsonResult OnPostEditProfile([FromForm] ProfilePostEditProfile? data)
     {
-        var response = new ApiResponse<string>(false, "Nothing to change", "");
-
-        if (data == null) return response.CreateJsonResult(false, "Nothing to change", "");
-
-        if (User.Identity?.IsAuthenticated == false) return response.CreateJsonResult(false, "You are not allowed to do this", "");
-
+        var response = new ApiResponse<List<Models.DB.Primitives.Column>?>(false, "Nothing to change", null);
+        // Check if the user is logged in
+        if (data == null) return response.CreateJsonResult(false, "Nothing to change", null);
+        if (User.Identity?.IsAuthenticated == false) return response.CreateJsonResult(false, "You are not allowed to do this", null);
+        var currentUserInfo = this._DB._Provider.select("User", new string[] { "id", "username", "description", "profile_picture" }, new Models.DB.Primitives.Where[] {
+            new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, User.Identity?.Name ?? "")
+        });
+        // Get the data to update
         var updatingData = new List<Models.DB.Primitives.Column>() { };
         data.GetType().GetProperties().ToList().ForEach(property =>
         {
-            if (property.GetValue(data) != null && property.GetValue(data)?.ToString() != "")
+            // Check if the property is not null, not empty, not the same as the current value and not the profile picture
+            if (
+                property.GetValue(data) != null &&
+                property.GetValue(data)?.ToString() != "" &&
+                property.GetValue(data)?.ToString() != currentUserInfo[0]._columns.Find(col => col._column == property.Name)?._value &&
+                property.Name != "profilePicture"
+            )
             {
                 updatingData.Add(new Models.DB.Primitives.Column(property.Name, property.GetValue(data)?.ToString()));
             }
         });
-        if (updatingData.Count() == 0) return response.CreateJsonResult(false, "Nothing to change", "");
+        // Update the profile picture if there is a new one
+        if (data.profilePicture != null)
+        {
+            // Check if the file is an image
+            if (data.profilePicture.ContentType.Split("/")[0] != "image") return response.CreateJsonResult(false, "The file is not an image", null);
+            // Check if the file is not too big
+            if (data.profilePicture.Length > 1000000) return response.CreateJsonResult(false, "The file is too big", null);
+            // Upload the new profile picture + add to the updatingData
+            var fileName = "user_" + currentUserInfo[0]._columns.Find(col => col._column == "id")?._value + "_photo_" + DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds + "." + data.profilePicture.ContentType.Split("/")[1];
+            var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/profilePics", fileName);
+            using (var filestream = new FileStream(file, FileMode.Create))
+            {
+                data.profilePicture.CopyTo(filestream);
+            }
+            updatingData.Add(new Models.DB.Primitives.Column("profile_picture", fileName));
+            // Delete the old profile picture
+            if (currentUserInfo[0]._columns.Find(col => col._column == "profile_picture")?._value != null)
+            {
+                var oldFile = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/profilePics", currentUserInfo[0]._columns.Find(col => col._column == "profile_picture")?._value);
+                if (System.IO.File.Exists(oldFile)) System.IO.File.Delete(oldFile);
+            }
+
+        }
+        // Check if there is something to update
+        if (updatingData.Count() == 0) return response.CreateJsonResult(false, "Nothing to change", null);
+        // Update the user
         this._DB._Provider.update("User", updatingData, new Models.DB.Primitives.Where[] {
             new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, User.Identity?.Name ?? "")
         }, 0);
-        return response.CreateJsonResult(true, "Profile updated", "");
+        return response.CreateJsonResult(true, "Profile updated", updatingData);
     }
     public JsonResult OnPostDeleteVacation([FromBody] ProfileGetVacations data)
     {
@@ -117,6 +152,7 @@ public class ProfileModel : PageModel
     {
         var response = new ApiResponse<Vacation?>(false, "Nothing found", null);
         if (data == null) return new JsonResult(response);
+        // Check if the user exists
         var userFetch = this._DB._Provider.select("User",
             new string[] { "id" },
             new Models.DB.Primitives.Where[] {
@@ -126,6 +162,7 @@ public class ProfileModel : PageModel
         {
             return new JsonResult(response);
         }
+        // get the vacation
         long userId = userFetch[0]._columns.Find(col => col._column == "id")._value;
         var vacationFetch = this._DB._Provider.select("Vacation", new string[] { "id", "User", "name", "description", "start", "end" }, new Models.DB.Primitives.Where[] {
             new Models.DB.Primitives.Where("User", Models.DB.Primitives.Compare.Equal, userId.ToString()),
@@ -134,9 +171,11 @@ public class ProfileModel : PageModel
         {
             return new JsonResult(response);
         }
+        // get the photo
         var photoFetch = this._DB._Provider.select("Vacation_Photo", new string[] { "path" }, new Models.DB.Primitives.Where[] {
             new Models.DB.Primitives.Where("Vacation", Models.DB.Primitives.Compare.Equal, ((long) vacationFetch[0]._columns.Find(col => col._column == "id")._value).ToString()),
         }, 1);
+        // return the vacation + photo
         var vacation = new Vacation(
             vacationFetch[0]._columns.Find(col => col._column == "id")?._value,
             vacationFetch[0]._columns.Find(col => col._column == "User")?._value,

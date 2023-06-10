@@ -51,12 +51,23 @@ public class SearchModel : PageModel
                 users[i]._columns.Find(x => x._column == "username")?._value,
                 users[i]._columns.Find(x => x._column == "email")?._value,
                 users[i]._columns.Find(x => x._column == "description")?._value,
-                users[i]._columns.Find(x => x._column == "profile_picture")?._value,
+                users[i]._columns.Find(col => col._column == "profile_picture")?._value == "" ? null : users[i]._columns.Find(col => col._column == "profile_picture")?._value,
                 DateTimeOffset.FromUnixTimeSeconds((long)users[i]._columns.Find(col => col._column == "created_at")?._value).DateTime,
                 vacationsArray,
                 vacationCount
             );
         }
+    }
+
+    private Models.DB.Primitives.Row[] OnGetSearch(string search)
+    {
+        // Get users from the database
+        return this._DB._Provider.rawQuery("SELECT * FROM `User` WHERE `username` LIKE '%@Search%' OR `email` LIKE '%@Search%'", new (string column, dynamic value)[] { (column: "Search", search) });
+    }
+    private Models.DB.Primitives.Row[] OnGetNoSearch()
+    {
+        // Get random users from the database
+        return this._DB._Provider.rawQuery("SELECT * FROM `User` ORDER BY RANDOM() LIMIT 5");
     }
     public new class User
     {
@@ -80,22 +91,12 @@ public class SearchModel : PageModel
                 username,
                 email,
                 description ?? "",
-                profilePicture ?? "",
+                profilePicture,
                 createdAt
             );
             this.vacations = vacations;
             this.vacationCount = vacationCount;
         }
-    }
-    private Models.DB.Primitives.Row[] OnGetSearch(string search)
-    {
-        // Get users from the database
-        return this._DB._Provider.rawQuery("SELECT * FROM `User` WHERE `username` LIKE '%@Search%' OR `email` LIKE '%@Search%'", new (string column, dynamic value)[] { (column: "Search", search) });
-    }
-    private Models.DB.Primitives.Row[] OnGetNoSearch()
-    {
-        // Get random users from the database
-        return this._DB._Provider.rawQuery("SELECT * FROM `User` ORDER BY RANDOM() LIMIT 5");
     }
 }
 

@@ -26,12 +26,15 @@ ViewData["Title"] = "Search other wanderers";
         {
         <div class="card shadow-lg compact bg-base-100">
             <div class="card w-96 bg-base-100 shadow-xl">
-                <figure>
-                    <img src="~/
-                        @((user.user.profilePicture == null) ?" media/ProfilePictures/default.png"
-                        : "media/ProfilePictures/" + user.user.profilePicture ) " alt=" Profile picture"
-                        class="rounded-t-lg" />
-                </figure>
+                <div class="flex justify-center items-center">
+                    @if(user.user.profilePicture != null) {
+                    <img class="rounded-full object-cover w-32 h-32"
+                        src="~/uploads/profile/profilePics/@user.user.profilePicture" alt="Profile image" />
+                    } else {
+                    <img class="rounded-full object-cover w-32 h-32" src="~/media/Profile/NOPROFILE.jpg"
+                        alt="Profile image" />
+                    }
+                </div>
                 <div class="card-body">
                     <h2 class="card-title">
                         @user.user.username
@@ -43,7 +46,7 @@ ViewData["Title"] = "Search other wanderers";
                     <div class="card-actions flex-col items-end justify-end">
                         <a asp-page="/profile/Profile" asp-route-Username="@user.user.id"
                             class="btn btn-primary">Profile</a>
-                        <div class="flex flex-wrap gap-1">
+                        <div class="flex justify-center items-center flex-wrap gap-1">
                             @foreach (var vacation in user.vacations)
                             {
                             <a asp-page="/profile/vacation/Vacation" asp-route-Username="@user.user.id"

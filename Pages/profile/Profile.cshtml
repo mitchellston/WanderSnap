@@ -9,10 +9,13 @@ Model._User.username; }
 <script src="~/js/profile/deleteVacation.js" defer></script>
 }
 <section class="flex gap-2 w-full m-2 mt-0 pt-2">
-    <div>
-        <img class="rounded-full object-cover w-32 h-32"
-            src="https://www.howtogeek.com/wp-content/uploads/2021/07/Discord-Logo-Lede.png?height=200p&trim=2,2,2,2"
+    <div id="profilePicture" class="w-32">
+        @if(Model._User.profilePicture != null) {
+        <img class="rounded-full object-cover w-32 h-32" src="~/uploads/profile/profilePics/@Model._User.profilePicture"
             alt="Profile image" />
+        } else {
+        <img class="rounded-full object-cover w-32 h-32" src="~/media/Profile/NOPROFILE.jpg" alt="Profile image" />
+        }
     </div>
     <div class="relative flex-grow">
         <h1 class="text-2xl dark:text-white font-bold editable" data-column="username" data-element="input"
