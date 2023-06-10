@@ -36,7 +36,8 @@ ViewData["Title"] = "Home page";
             <p class="py-6">Embark on extraordinary adventures, capture unforgettable moments, and effortlessly share
                 the magic of your ultimate vacations with WanderSnap, connecting you with a global community of
                 wanderers and inspiring wanderlust in others.</p>
-            <a asp-page="/auth/Register" class="btn btn-primary">Get Started</a>
+            <a asp-page='@((User.Identity.IsAuthenticated==false) ? "/auth/Register" : "/profile/vacation/AddVacation")'
+                class="btn btn-primary">Get Started</a>
         </div>
     </div>
 </section>

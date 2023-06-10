@@ -8,5 +8,6 @@ namespace P4_Vacation_photos.Models.DB.Providers
         bool delete(string table, Where[]? where = null, int limit = 1);
         Row[] select(string table, string[]? columns = null, Where[]? where = null, int? limit = 1, int? offset = null);
         int count(string table, Where[]? where = null);
+        Row[] rawQuery(string query, (string column, dynamic value)[]? parameters = null);
     }
 }

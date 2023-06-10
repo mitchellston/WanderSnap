@@ -1,0 +1,56 @@
+﻿@page
+@model SearchModel
+@{
+ViewData["Title"] = "Search other wanderers";
+}
+
+
+<section class="m-2">
+    <h1 class="text-lg font-semibold">Search other wanderers</h1>
+    <form method="get" class="flex gap-1">
+        <div class="form-control flex-grow">
+            <input type="text" name="search" value="@(Model.Search ?? "")" placeholder="Search"
+                class="input input-bordered" />
+        </div>
+        <button type="submit" class="btn btn-ghost">Search</button>
+    </form>
+</section>
+@if(Model._Users.Length == 0) {
+<section>
+    <h1 class="text-lg font-semibold">No results found</h1>
+</section>
+}else {
+<section class="m-5">
+    <div class="flex flex-wrap">
+        @foreach (var user in Model._Users)
+        {
+        <div class="card shadow-lg compact bg-base-100">
+            <div class="card w-96 bg-base-100 shadow-xl">
+                <figure>
+                    <img src="~/
+                        @((user.profilePicture == null) ?" media/ProfilePictures/default.png"
+                        : "media/ProfilePictures/" + user.profilePicture ) " alt=" Profile picture"
+                        class="rounded-t-lg" />
+                </figure>
+                <div class="card-body">
+                    <h2 class="card-title">
+                        @user.username
+
+                        @if(user.createdAt < DateTime.Now.AddDays(-7)) { <div class="badge
+                            badge-secondary ">NEW
+                </div> } </h2>
+                <p>@user.description</p>
+                <div class="card-actions flex-col items-end justify-end">
+                    <a asp-page="/profile/Profile" asp-route-Username="@user.id" class="btn btn-primary">Profile</a>
+                    <div>
+                        <div class="badge badge-outline">Fashion</div>
+                        <div class="badge badge-outline">Products</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    }
+</section>
+}

@@ -127,6 +127,39 @@ namespace P4_Vacation_photos.Models.DB.Providers
                 }
             return Convert.ToInt32(command.ExecuteScalar());
         }
+        /// <summary>Executes a raw query</summary>
+        /// <param name="query">The query to execute</param>
+        /// <param name="parameters">The parameters to add to the query</param>
+        public Row[] rawQuery(string query, (string column, dynamic value)[]? parameters = null)
+        {
+            SqliteCommand command = new SqliteCommand(query, _connection);
+            var execution = command.ExecuteReader();
+            // parameters
+            if (parameters != null)
+                foreach ((string column, dynamic value) parameter in parameters)
+                {
+                    command.Parameters.AddWithValue('@' + parameter.column, parameter.value);
+                }
+
+            List<Row> rows = new List<Row>();
+            while (execution.Read())
+            {
+                List<P4_Vacation_photos.Models.DB.Primitives.Column> columnsList = new List<P4_Vacation_photos.Models.DB.Primitives.Column>();
+                for (int i = 0; i < execution.FieldCount; i++)
+                {
+                    if (execution.IsDBNull(i))
+                    {
+                        columnsList.Add(new P4_Vacation_photos.Models.DB.Primitives.Column(execution.GetName(i), ""));
+                    }
+                    else
+                    {
+                        columnsList.Add(new P4_Vacation_photos.Models.DB.Primitives.Column(execution.GetName(i), execution.GetValue(i)));
+                    }
+                }
+                rows.Add(new Row(columnsList));
+            }
+            return rows.ToArray();
+        }
 
         /// <summary>Generates the correct string for the where clause of the query</summary>
         private string[] generateWhereClause(Where[] where)

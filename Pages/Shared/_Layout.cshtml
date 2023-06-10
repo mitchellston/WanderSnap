@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@ViewData["Title"] - P4_Vacation_photos</title>
+  <title>@ViewData["Title"] - WonderSnap</title>
   <script src="~/lib/jquery/dist/jquery.min.js" defer></script>
   <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
 </head>
@@ -43,14 +43,14 @@
                   d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
                 </path>
               </svg>
-              <span class="flex-1 ml-3 whitespace-nowrap">Trips</span>
+              <span class="flex-1 ml-3 whitespace-nowrap">Your adventures</span>
               @* <span
                 class="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300"></span>
               *@
             </a>
           </li>
           <li>
-            <a href="#"
+            <a asp-page="/Search"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
               <svg viewBox="0 0 20 20"
                 class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -99,10 +99,6 @@
   <div class="sm:ml-64">
     <main role="main" class="bg-gray-50 overflow-auto dark:bg-gray-900 h-screen">@RenderBody()</main>
   </div>
-
-
-
-  @await RenderSectionAsync("Scripts", required: false)
 </body>
 
 </html>
