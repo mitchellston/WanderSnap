@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using P4_Vacation_photos.Classes;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 namespace P4_Vacation_photos.Pages;
-
+[Authorize]
 public class LogoutModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;

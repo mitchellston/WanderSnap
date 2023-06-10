@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using P4_Vacation_photos.Classes;
 using P4_Vacation_photos.Classes.api;
 namespace P4_Vacation_photos.Pages;
+[Authorize]
 public class ProfileModel : PageModel
 {
     private DbHandler _DB = new DbHandler();

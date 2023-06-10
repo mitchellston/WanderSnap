@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using P4_Vacation_photos.Classes;
 using P4_Vacation_photos.Classes.api;
 using System.ComponentModel.DataAnnotations;
 namespace P4_Vacation_photos.Pages;
+[Authorize]
 public class VacationsModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
@@ -34,7 +36,7 @@ public class VacationsModel : PageModel
     {
         bool usesId = Int64.TryParse(Username, out long id);
         var user = this._DB._Provider.select("User",
-        new string[] { "id", "username", "email", "description", "picture", "created_at" },
+        new string[] { "id", "username", "email", "description", "profile_picture", "created_at" },
         new Models.DB.Primitives.Where[] {
             usesId ?
             new Models.DB.Primitives.Where("id", Models.DB.Primitives.Compare.Equal, Username)
@@ -49,7 +51,7 @@ public class VacationsModel : PageModel
             user[0]._columns.Find(col => col._column == "username")?._value,
             user[0]._columns.Find(col => col._column == "email")?._value,
             user[0]._columns.Find(col => col._column == "description")?._value,
-            user[0]._columns.Find(col => col._column == "picture")?._value,
+            user[0]._columns.Find(col => col._column == "profile_picture")?._value,
             start
         );
         var vacation = this._DB._Provider.select("Vacation",

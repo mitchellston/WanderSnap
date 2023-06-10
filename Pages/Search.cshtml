@@ -28,29 +28,34 @@ ViewData["Title"] = "Search other wanderers";
             <div class="card w-96 bg-base-100 shadow-xl">
                 <figure>
                     <img src="~/
-                        @((user.profilePicture == null) ?" media/ProfilePictures/default.png"
-                        : "media/ProfilePictures/" + user.profilePicture ) " alt=" Profile picture"
+                        @((user.user.profilePicture == null) ?" media/ProfilePictures/default.png"
+                        : "media/ProfilePictures/" + user.user.profilePicture ) " alt=" Profile picture"
                         class="rounded-t-lg" />
                 </figure>
                 <div class="card-body">
                     <h2 class="card-title">
-                        @user.username
+                        @user.user.username
 
-                        @if(user.createdAt < DateTime.Now.AddDays(-7)) { <div class="badge
+                        @if(user.user.createdAt > DateTime.Now.AddDays(-7)) { <div class="badge
                             badge-secondary ">NEW
-                </div> } </h2>
-                <p>@user.description</p>
-                <div class="card-actions flex-col items-end justify-end">
-                    <a asp-page="/profile/Profile" asp-route-Username="@user.id" class="btn btn-primary">Profile</a>
-                    <div>
-                        <div class="badge badge-outline">Fashion</div>
-                        <div class="badge badge-outline">Products</div>
+                        </div> } </h2>
+                    <p>@user.user.description</p>
+                    <div class="card-actions flex-col items-end justify-end">
+                        <a asp-page="/profile/Profile" asp-route-Username="@user.user.id"
+                            class="btn btn-primary">Profile</a>
+                        <div class="flex flex-wrap gap-1">
+                            @foreach (var vacation in user.vacations)
+                            {
+                            <a asp-page="/profile/vacation/Vacation" asp-route-Username="@user.user.id"
+                                asp-route-VacationId="@vacation.id" class="badge badge-outline">@vacation.name</a>
+                            }
+                            <div class="badge badge-outline">Total adventures: @user.vacationCount</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </div>
-    }
+        </div>
+        }
 </section>
 }
