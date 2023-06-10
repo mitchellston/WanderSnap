@@ -62,7 +62,7 @@ public class SearchModel : PageModel
     private Models.DB.Primitives.Row[] OnGetSearch(string search)
     {
         // Get users from the database
-        return this._DB._Provider.rawQuery("SELECT * FROM `User` WHERE `username` LIKE @Search OR `id` IS '@Search'", new (string column, dynamic value)[] { (column: "@Search", '%' + search + '%') });
+        return this._DB._Provider.rawQuery("SELECT * FROM `User` WHERE `username` LIKE @Search OR `id` LIKE @Search", new (string column, dynamic value)[] { (column: "@Search", '%' + search + '%') });
     }
     private Models.DB.Primitives.Row[] OnGetNoSearch()
     {
