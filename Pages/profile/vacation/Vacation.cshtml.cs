@@ -123,6 +123,9 @@ public class VacationsModel : PageModel
             this._HasError = true;
             return Page();
         }
+        // Check if the folder /uploads/profile/vacations exists and create it if it doesn't
+        if(!Directory.Exists(Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/vacations")))
+            Directory.CreateDirectory(Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/vacations"));
         // upload the file
         var fileName = "vacation_" + this.VacationId + "_photo_" + DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds + "." + this.form_photo.ContentType.Split("/")[1];
         var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/vacations", fileName);

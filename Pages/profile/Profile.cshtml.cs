@@ -82,6 +82,8 @@ public class ProfileModel : PageModel
             if (data.profilePicture.ContentType.Split("/")[0] != "image") return response.CreateJsonResult(false, "The file is not an image", null);
             // Check if the file is not too big
             if (data.profilePicture.Length > 1000000) return response.CreateJsonResult(false, "The file is too big", null);
+            // Check if the folder /uploads/profile/profilePics exists and create it if it doesn't
+            if (!Directory.Exists(Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/profilePics"))) Directory.CreateDirectory(Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/profilePics"));
             // Upload the new profile picture + add to the updatingData
             var fileName = "user_" + currentUserInfo[0]._columns.Find(col => col._column == "id")?._value + "_photo_" + DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds + "." + data.profilePicture.ContentType.Split("/")[1];
             var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/profile/profilePics", fileName);
