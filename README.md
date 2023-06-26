@@ -1,6 +1,6 @@
 # WanderSnap
 
-WanderSnap is a project made with C# Razor pages on which users can create adventures which are collections of photo's which the user made.
+WanderSnap is a project made with C# Razor pages on which users can create adventures that are collections of photo's which the user took.
 
 ## Requirements
 
