@@ -1,6 +1,6 @@
-using P4_Vacation_photos.Models.DB.Providers;
+using WanderSnap.Models.DB.Providers;
 
-namespace P4_Vacation_photos.Classes
+namespace WanderSnap.Models
 {
     public class DbHandler
     {

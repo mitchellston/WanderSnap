@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 using System.ComponentModel.DataAnnotations;
-using P4_Vacation_photos.Classes;
+using WanderSnap.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 
-namespace P4_Vacation_photos.Pages;
+namespace WanderSnap.Pages;
 [Authorize]
 public class LogoutModel : PageModel
 {

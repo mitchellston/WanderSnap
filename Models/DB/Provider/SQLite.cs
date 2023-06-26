@@ -1,7 +1,7 @@
 using Microsoft.Data.Sqlite;
-using P4_Vacation_photos.Models.DB.Primitives;
+using WanderSnap.Models.DB.Primitives;
 
-namespace P4_Vacation_photos.Models.DB.Providers
+namespace WanderSnap.Models.DB.Providers
 {
     public class SQLiteProvider : IDbProvider
     {
@@ -44,16 +44,16 @@ namespace P4_Vacation_photos.Models.DB.Providers
             SqliteDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                List<P4_Vacation_photos.Models.DB.Primitives.Column> columnsList = new List<P4_Vacation_photos.Models.DB.Primitives.Column>();
+                List<WanderSnap.Models.DB.Primitives.Column> columnsList = new List<WanderSnap.Models.DB.Primitives.Column>();
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
                     if (reader.IsDBNull(i))
                     {
-                        columnsList.Add(new P4_Vacation_photos.Models.DB.Primitives.Column(reader.GetName(i), ""));
+                        columnsList.Add(new WanderSnap.Models.DB.Primitives.Column(reader.GetName(i), ""));
                     }
                     else
                     {
-                        columnsList.Add(new P4_Vacation_photos.Models.DB.Primitives.Column(reader.GetName(i), reader.GetValue(i)));
+                        columnsList.Add(new WanderSnap.Models.DB.Primitives.Column(reader.GetName(i), reader.GetValue(i)));
                     }
                 }
                 rows.Add(new Row(columnsList));
@@ -64,11 +64,11 @@ namespace P4_Vacation_photos.Models.DB.Providers
         /// <summary>Inserts a row(s) into the database</summary>
         /// <param name="table">The table to insert the row into</param>
         /// <param name="data">The data to insert</param>
-        public bool insert(string table, List<P4_Vacation_photos.Models.DB.Primitives.Column> data)
+        public bool insert(string table, List<WanderSnap.Models.DB.Primitives.Column> data)
         {
             string query = $"INSERT INTO `{table}` ({string.Join(", ", data.Select(x => '`' + x._column + '`'))}) VALUES ({string.Join(", ", data.Select(x => '@' + x._column))})";
             SqliteCommand command = new SqliteCommand(query, _connection);
-            foreach (P4_Vacation_photos.Models.DB.Primitives.Column column in data)
+            foreach (WanderSnap.Models.DB.Primitives.Column column in data)
             {
                 command.Parameters.AddWithValue('@' + column._column, column._value);
             }
@@ -80,11 +80,11 @@ namespace P4_Vacation_photos.Models.DB.Providers
         /// <param name="data">The data to update</param>
         /// <param name="where">The where clause</param>
         /// <param name="limit">The limit of rows to update (only works if SQLITE_ENABLE_UPDATE_DELETE_LIMIT is added add compile time)</param>
-        public bool update(string table, List<P4_Vacation_photos.Models.DB.Primitives.Column> data, Where[]? where = null, int limit = 1)
+        public bool update(string table, List<WanderSnap.Models.DB.Primitives.Column> data, Where[]? where = null, int limit = 1)
         {
             string query = $"UPDATE `{table}` SET {string.Join(", ", data.Select(x => '`' + x._column + "` = @" + x._column))} {(where != null && where.Length > 0 ? $"WHERE {string.Join(" AND ", generateWhereClause(where))}" : "")} {(limit > 0 ? $"LIMIT {limit}" : "")}";
             SqliteCommand command = new SqliteCommand(query, _connection);
-            foreach (P4_Vacation_photos.Models.DB.Primitives.Column column in data)
+            foreach (WanderSnap.Models.DB.Primitives.Column column in data)
             {
                 command.Parameters.AddWithValue('@' + column._column, column._value);
             }
@@ -143,16 +143,16 @@ namespace P4_Vacation_photos.Models.DB.Providers
             List<Row> rows = new List<Row>();
             while (execution.Read())
             {
-                List<P4_Vacation_photos.Models.DB.Primitives.Column> columnsList = new List<P4_Vacation_photos.Models.DB.Primitives.Column>();
+                List<WanderSnap.Models.DB.Primitives.Column> columnsList = new List<WanderSnap.Models.DB.Primitives.Column>();
                 for (int i = 0; i < execution.FieldCount; i++)
                 {
                     if (execution.IsDBNull(i))
                     {
-                        columnsList.Add(new P4_Vacation_photos.Models.DB.Primitives.Column(execution.GetName(i), ""));
+                        columnsList.Add(new WanderSnap.Models.DB.Primitives.Column(execution.GetName(i), ""));
                     }
                     else
                     {
-                        columnsList.Add(new P4_Vacation_photos.Models.DB.Primitives.Column(execution.GetName(i), execution.GetValue(i)));
+                        columnsList.Add(new WanderSnap.Models.DB.Primitives.Column(execution.GetName(i), execution.GetValue(i)));
                     }
                 }
                 rows.Add(new Row(columnsList));

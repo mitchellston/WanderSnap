@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using P4_Vacation_photos.Classes;
-namespace P4_Vacation_photos.Pages;
+using WanderSnap.Models;
+namespace WanderSnap.Pages;
 [Authorize]
 public class SearchModel : PageModel
 {
@@ -71,7 +71,7 @@ public class SearchModel : PageModel
     }
     public new class User
     {
-        public P4_Vacation_photos.Classes.User user { get; set; }
+        public WanderSnap.Models.User user { get; set; }
         public Vacation[] vacations { get; set; }
         public int vacationCount { get; set; }
         public class Vacation
@@ -86,7 +86,7 @@ public class SearchModel : PageModel
         }
         public User(long id, string username, string email, string? description, string? profilePicture, DateTime createdAt, Vacation[] vacations, int vacationCount)
         {
-            this.user = new P4_Vacation_photos.Classes.User(
+            this.user = new WanderSnap.Models.User(
                 id,
                 username,
                 email,

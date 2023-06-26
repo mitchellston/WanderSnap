@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Security.Cryptography;
-namespace P4_Vacation_photos.Classes
+namespace WanderSnap.Models
 {
     public class Hashing
     {

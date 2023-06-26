@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using P4_Vacation_photos.Classes;
-using P4_Vacation_photos.Classes.api;
-namespace P4_Vacation_photos.Pages;
+using WanderSnap.Models;
+using WanderSnap.Models.api;
+namespace WanderSnap.Pages;
 [Authorize]
 public class ProfileModel : PageModel
 {

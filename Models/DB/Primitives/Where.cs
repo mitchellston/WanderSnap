@@ -1,4 +1,4 @@
-namespace P4_Vacation_photos.Models.DB.Primitives
+namespace WanderSnap.Models.DB.Primitives
 {
     /// <summary>Represents the where clause of a database query</summary>
     public class Where : Column

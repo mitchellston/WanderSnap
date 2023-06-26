@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace P4_Vacation_photos.Pages;
+namespace WanderSnap.Pages;
 
 public class IndexModel : PageModel
 {

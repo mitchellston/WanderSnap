@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace P4_Vacation_photos.Classes.api;
+namespace WanderSnap.Models.api;
 class ApiResponse<T>
 {
     public bool success { get; set; }

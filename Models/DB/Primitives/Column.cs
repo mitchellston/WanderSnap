@@ -1,4 +1,4 @@
-namespace P4_Vacation_photos.Models.DB.Primitives
+namespace WanderSnap.Models.DB.Primitives
 {
 
     ///<summary>The columns and values of a table</summary>

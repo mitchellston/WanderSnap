@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using P4_Vacation_photos.Classes;
-using P4_Vacation_photos.Models.DB.Primitives;
+using WanderSnap.Models;
+using WanderSnap.Models.DB.Primitives;
 
-namespace P4_Vacation_photos.Pages;
+namespace WanderSnap.Pages;
 [Authorize]
 public class AddVacationModel : PageModel
 {

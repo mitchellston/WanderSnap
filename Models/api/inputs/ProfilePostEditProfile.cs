@@ -1,4 +1,4 @@
-namespace P4_Vacation_photos.Classes;
+namespace WanderSnap.Models;
 public class ProfilePostEditProfile
 {
     public string? username { get; set; }
