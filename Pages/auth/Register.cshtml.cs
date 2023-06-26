@@ -79,7 +79,7 @@ public class RegisterModel : PageModel
             new Models.DB.Primitives.Column("password", hashedPassword),
             new Models.DB.Primitives.Column("created_at", now.ToUnixTimeSeconds())
         }.ToList());
-        return RedirectToPage("/Login");
+        return RedirectToPage("/auth/Login");
     }
 }
 
